@@ -32,8 +32,9 @@ user_guide_src/cilexer/pycilexer.egg-info/*
 /tests/results/
 
 # Configuration files (uncomment if you want them ignored)
-# application/config/config.php
-# application/config/database.php
+.htaccess
+application/config/config.php
+application/config/database.php
 
 uploads/bukti_bayar/*
 !uploads/bukti_bayar/.gitkeep
