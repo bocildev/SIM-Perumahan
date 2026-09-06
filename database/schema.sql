@@ -63,6 +63,15 @@ CREATE TABLE IF NOT EXISTS `pengeluaran_kas` (
   CONSTRAINT `fk_pengeluaran_user` FOREIGN KEY (`created_by`) REFERENCES `users` (`id_user`) ON DELETE SET NULL ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+CREATE TABLE IF NOT EXISTS `system_settings` (
+  `setting_key` VARCHAR(100) NOT NULL PRIMARY KEY,
+  `setting_value` TEXT NULL,
+  `setting_name` VARCHAR(150) NULL,
+  `description` TEXT NULL,
+  `is_encrypted` TINYINT(1) NOT NULL DEFAULT 0,
+  `updated_at` DATETIME NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 -- Seed Data: Roles
 INSERT IGNORE INTO `roles` (`id_role`, `role_name`) VALUES
 (1, 'admin'),
