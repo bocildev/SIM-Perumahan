@@ -42,6 +42,59 @@ class M_Iuran extends CI_Model {
     }
 
     /**
+     * Mengambil rincian status iuran 12 bulan untuk 1 orang warga tertentu (termasuk tanggal bayar, nominal, bukti bayar)
+     */
+    public function get_iuran_warga_detail($id_warga, $tahun) {
+        $bulan_names = [
+            1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April',
+            5 => 'Mei', 6 => 'Juni', 7 => 'Juli', 8 => 'Agustus',
+            9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember'
+        ];
+
+        $this->db->select('p.*, u.username as pencatat');
+        $this->db->from('pemasukan_iuran p');
+        $this->db->join('users u', 'u.id_user = p.created_by', 'left');
+        $this->db->where('p.id_warga', $id_warga);
+        $this->db->where('p.tahun', $tahun);
+        $records = $this->db->get()->result();
+
+        $by_month = [];
+        foreach ($records as $r) {
+            $by_month[$r->bulan] = $r;
+        }
+
+        $detail = [];
+        $total_lunas = 0;
+        $total_nominal = 0;
+
+        for ($b = 1; $b <= 12; $b++) {
+            $transaksi = $by_month[$b] ?? null;
+            if ($transaksi) {
+                $total_lunas++;
+                $total_nominal += (float) $transaksi->nominal;
+            }
+            $detail[$b] = [
+                'bulan_angka' => $b,
+                'nama_bulan'  => $bulan_names[$b],
+                'is_lunas'    => ($transaksi !== null),
+                'tgl_bayar'   => $transaksi ? $transaksi->tgl_bayar : null,
+                'nominal'     => $transaksi ? $transaksi->nominal : null,
+                'bukti_bayar' => $transaksi ? $transaksi->bukti_bayar : null,
+                'keterangan'  => $transaksi ? $transaksi->keterangan : null,
+                'pencatat'    => $transaksi ? $transaksi->pencatat : null,
+                'id_pemasukan'=> $transaksi ? $transaksi->id_pemasukan : null
+            ];
+        }
+
+        return [
+            'detail'        => $detail,
+            'total_lunas'   => $total_lunas,
+            'total_belum'   => 12 - $total_lunas,
+            'total_nominal' => $total_nominal
+        ];
+    }
+
+    /**
      * Ambil riwayat pembayaran iuran lengkap
      */
     public function get_riwayat_iuran($tahun = null, $id_warga = null) {

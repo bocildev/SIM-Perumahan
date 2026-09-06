@@ -27,7 +27,7 @@
         <li class="sidebar-item">
             <a href="<?= site_url('iuran'); ?>" class="sidebar-link <?= ($this->uri->segment(1) == 'iuran') ? 'active' : ''; ?>">
                 <i class="bi bi-cash-stack"></i>
-                <span>Iuran Warga</span>
+                <span><?= ($current_user['role_name'] === 'warga') ? 'Iuran Saya' : 'Iuran Warga'; ?></span>
             </a>
         </li>
 
@@ -57,6 +57,12 @@
                 <span>Management User</span>
             </a>
         </li>
+        <li class="sidebar-item">
+            <a href="<?= site_url('system_master'); ?>" class="sidebar-link <?= ($this->uri->segment(1) == 'system_master') ? 'active' : ''; ?>">
+                <i class="bi bi-cpu-fill"></i>
+                <span>System Master</span>
+            </a>
+        </li>
     </ul>
     <?php endif; ?>
 
@@ -84,5 +90,21 @@
             <i class="bi bi-exclamation-triangle-fill fs-5 me-2"></i>
             <div><?= html_escape($this->session->flashdata('error')); ?></div>
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    <?php endif; ?>
+
+    <!-- Peringatan Password Default Akun Warga -->
+    <?php if ($this->session->userdata('is_default_password') && $current_user['role_name'] === 'warga'): ?>
+        <div class="alert alert-warning border-warning alert-dismissible fade show p-3 mb-4 rounded-3 shadow-sm d-flex align-items-center justify-content-between flex-wrap gap-2" role="alert">
+            <div class="d-flex align-items-center gap-3">
+                <i class="bi bi-shield-exclamation fs-3 text-warning flex-shrink-0"></i>
+                <div>
+                    <strong class="text-dark">Keamanan Akun: Anda masih menggunakan password default!</strong>
+                    <div class="small text-muted">Demi keamanan privasi data dan transparansi komplek, silakan ganti password default Anda.</div>
+                </div>
+            </div>
+            <button type="button" class="btn btn-warning btn-sm fw-semibold text-dark text-nowrap" data-bs-toggle="modal" data-bs-target="#modalChangePasswordDefault">
+                <i class="bi bi-key-fill me-1"></i> Ganti Password Sekarang
+            </button>
         </div>
     <?php endif; ?>

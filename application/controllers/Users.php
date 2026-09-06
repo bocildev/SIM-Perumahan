@@ -12,10 +12,15 @@ class Users extends Auth_Controller {
     }
 
     public function index() {
+        $this->db->where('id_user IS NULL', null, false);
+        $this->db->or_where('id_user', 0);
+        $total_tanpa_user = $this->db->count_all_results('warga');
+
         $data = [
-            'page_title' => 'Management User & Role',
-            'users'      => $this->M_Users->get_all_users(),
-            'roles'      => $this->M_Users->get_all_roles()
+            'page_title'       => 'Management User & Role',
+            'users'            => $this->M_Users->get_all_users(),
+            'roles'            => $this->M_Users->get_all_roles(),
+            'total_tanpa_user' => $total_tanpa_user
         ];
         $this->render('users/index', $data);
     }
@@ -66,12 +71,14 @@ class Users extends Auth_Controller {
             redirect('users');
         }
 
-        $new_pass = 'password123';
+        $is_warga = (isset($user->role_name) && strtolower($user->role_name) === 'warga');
+        $new_pass = $is_warga ? 'WargaBaik1!' : 'password123';
+
         $this->M_Users->update_user($id_user, [
             'password' => password_hash($new_pass, PASSWORD_BCRYPT)
         ]);
 
-        $this->session->set_flashdata('success', 'Password user ' . html_escape($user->username) . ' berhasil direset menjadi: password123');
+        $this->session->set_flashdata('success', 'Password user ' . html_escape($user->username) . ' berhasil direset menjadi: ' . $new_pass);
         redirect('users');
     }
 

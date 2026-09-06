@@ -46,8 +46,11 @@ class M_Users extends CI_Model {
      * Ambil user by ID
      */
     public function get_user_by_id($id_user) {
-        $this->db->where('id_user', $id_user);
-        return $this->db->get('users')->row();
+        $this->db->select('u.*, r.role_name');
+        $this->db->from('users u');
+        $this->db->join('roles r', 'r.id_role = u.id_role', 'left');
+        $this->db->where('u.id_user', $id_user);
+        return $this->db->get()->row();
     }
 
     /**

@@ -529,6 +529,14 @@
                     <div class="text-muted small"><?= html_escape($current_user['role_name']); ?></div>
                 </li>
                 <li><a class="dropdown-item small" href="<?= site_url('dashboard'); ?>"><i class="bi bi-speedometer2 me-2"></i> Dashboard</a></li>
+                <li>
+                    <a class="dropdown-item small d-flex align-items-center justify-content-between" href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#modalChangePasswordDefault">
+                        <span><i class="bi bi-shield-lock me-2 text-primary"></i> Ganti Password</span>
+                        <?php if ($this->session->userdata('is_default_password') && $current_user['role_name'] === 'warga'): ?>
+                            <span class="badge bg-danger ms-2" style="font-size: 0.65rem;">Default</span>
+                        <?php endif; ?>
+                    </a>
+                </li>
                 <li><hr class="dropdown-divider"></li>
                 <li><a class="dropdown-item small text-danger" href="<?= site_url('auth/logout'); ?>"><i class="bi bi-box-arrow-right me-2"></i> Keluar (Logout)</a></li>
             </ul>

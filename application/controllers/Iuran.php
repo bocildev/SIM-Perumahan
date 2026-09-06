@@ -11,6 +11,12 @@ class Iuran extends Auth_Controller {
     }
 
     public function index() {
+        // Jika login sebagai warga, warga HANYA boleh melihat iuran pribadinya
+        if ($this->current_user['role_name'] === 'warga') {
+            return $this->saya();
+        }
+
+        // Admin dan Pengurus melihat Matriks Rekap Seluruh Warga
         $tahun = (int) $this->input->get('tahun');
         if (!$tahun) {
             $tahun = (int) date('Y');
@@ -24,6 +30,78 @@ class Iuran extends Auth_Controller {
             'matriks'    => $matriks
         ];
         $this->render('iuran/index', $data);
+    }
+
+    /**
+     * Halaman Iuran Pribadi (Khusus Warga)
+     * Menampilkan detail iuran 12 bulan miliknya sendiri lengkap dengan tanggal bayar, nominal & bukti
+     */
+    public function saya() {
+        $tahun = (int) $this->input->get('tahun');
+        if (!$tahun) {
+            $tahun = (int) date('Y');
+        }
+
+        $id_warga = $this->current_user['id_warga'];
+        if (!$id_warga) {
+            $warga_db = $this->db->get_where('warga', ['id_user' => $this->current_user['id_user']])->row();
+            if ($warga_db) {
+                $id_warga = $warga_db->id_warga;
+            }
+        }
+
+        if (!$id_warga) {
+            $this->session->set_flashdata('error', 'Akun Anda belum terhubung dengan data warga atau nomor rumah. Silakan hubungi pengurus komplek.');
+            redirect('dashboard');
+            return;
+        }
+
+        $warga = $this->M_Warga->get_warga_by_id($id_warga);
+        $rekap = $this->M_Iuran->get_iuran_warga_detail($id_warga, $tahun);
+
+        $data = [
+            'page_title'    => 'Kartu Iuran Saya - ' . ($warga ? $warga->no_blok : ''),
+            'tahun'         => $tahun,
+            'warga'         => $warga,
+            'detail'        => $rekap['detail'],
+            'total_lunas'   => $rekap['total_lunas'],
+            'total_belum'   => $rekap['total_belum'],
+            'total_nominal' => $rekap['total_nominal'],
+            'is_admin_view' => false
+        ];
+        $this->render('iuran/warga_pribadi', $data);
+    }
+
+    /**
+     * Detail Iuran Perorangan yang bisa dibuka oleh Admin/Pengurus
+     */
+    public function detail($id_warga) {
+        $this->check_role(['admin', 'pengurus']);
+
+        $tahun = (int) $this->input->get('tahun');
+        if (!$tahun) {
+            $tahun = (int) date('Y');
+        }
+
+        $warga = $this->M_Warga->get_warga_by_id($id_warga);
+        if (!$warga) {
+            show_404();
+            return;
+        }
+
+        $rekap = $this->M_Iuran->get_iuran_warga_detail($id_warga, $tahun);
+
+        $data = [
+            'page_title'    => 'Rincian Iuran - ' . $warga->nama_lengkap . ' (' . $warga->no_blok . ')',
+            'tahun'         => $tahun,
+            'warga'         => $warga,
+            'detail'        => $rekap['detail'],
+            'total_lunas'   => $rekap['total_lunas'],
+            'total_belum'   => $rekap['total_belum'],
+            'total_nominal' => $rekap['total_nominal'],
+            'is_admin_view' => true
+        ];
+        $this->render('iuran/warga_pribadi', $data);
     }
 
     public function riwayat() {

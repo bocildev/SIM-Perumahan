@@ -123,10 +123,18 @@
             </div>
 
             <div class="mb-4">
-                <label class="form-label small fw-semibold text-secondary">Password</label>
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                    <label class="form-label small fw-semibold text-secondary mb-0">Password</label>
+                    <a href="javascript:void(0)" class="small text-decoration-none text-primary fw-semibold" data-bs-toggle="modal" data-bs-target="#modalGantiPasswordLogin" style="font-size: 0.78rem;">
+                        <i class="bi bi-key-fill me-1"></i> Ganti Password Default?
+                    </a>
+                </div>
                 <div class="input-group">
                     <span class="input-group-text bg-light text-muted"><i class="bi bi-lock"></i></span>
                     <input type="password" name="password" id="password" class="form-control" placeholder="Masukkan password" required>
+                    <button class="btn btn-outline-secondary" type="button" id="btnToggleLoginPass" title="Lihat password">
+                        <i class="bi bi-eye-slash" id="loginPassIcon"></i>
+                    </button>
                 </div>
                 <?= form_error('password', '<div class="text-danger small mt-1">', '</div>'); ?>
             </div>
@@ -157,12 +165,90 @@
     </div>
 </div>
 
+<!-- Modal Ganti Password dari Halaman Login -->
+<div class="modal fade" id="modalGantiPasswordLogin" tabindex="-1" aria-labelledby="modalGantiPasswordLoginLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-4 border-0 shadow">
+            <div class="modal-header bg-dark text-white border-0 py-3">
+                <h5 class="modal-title fs-6 fw-bold" id="modalGantiPasswordLoginLabel">
+                    <i class="bi bi-shield-lock me-2 text-warning"></i> Ganti Password Akun / Warga
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <?= form_open('auth/change_password_login'); ?>
+            <div class="modal-body p-4">
+                <div class="alert alert-info py-2 px-3 small rounded-3 mb-3">
+                    <i class="bi bi-info-circle-fill me-1"></i> Khusus akun warga baru dengan password default (<code>WargaBaik1!</code>) atau user yang ingin memperbarui password.
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label small fw-semibold text-secondary">Username <span class="text-danger">*</span></label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light text-muted"><i class="bi bi-person"></i></span>
+                        <input type="text" name="username" class="form-control" placeholder="Masukkan username Anda" required>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label small fw-semibold text-secondary">Password Lama / Default Saat Ini <span class="text-danger">*</span></label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light text-muted"><i class="bi bi-lock"></i></span>
+                        <input type="password" name="current_password" class="form-control" placeholder="Misal: WargaBaik1!" required>
+                    </div>
+                    <div class="form-text small text-muted">Untuk warga baru yang dibuat oleh pengurus, password defaultnya adalah: <code>WargaBaik1!</code></div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label small fw-semibold text-secondary">Password Baru (Minimal 6 Karakter) <span class="text-danger">*</span></label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light text-muted"><i class="bi bi-shield-check"></i></span>
+                        <input type="password" name="new_password" class="form-control" placeholder="Buat password baru Anda" minlength="6" required>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label small fw-semibold text-secondary">Konfirmasi Password Baru <span class="text-danger">*</span></label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light text-muted"><i class="bi bi-check2-circle"></i></span>
+                        <input type="password" name="confirm_password" class="form-control" placeholder="Ulangi password baru" minlength="6" required>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer border-top bg-light p-3">
+                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Batal</button>
+                <button type="submit" class="btn btn-primary btn-sm px-3">
+                    <i class="bi bi-check-circle me-1"></i> Simpan Password Baru
+                </button>
+            </div>
+            <?= form_close(); ?>
+        </div>
+    </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script>
 function setDemo(user, pass) {
     document.getElementById('username').value = user;
     document.getElementById('password').value = pass;
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+    const btnToggle = document.getElementById('btnToggleLoginPass');
+    const passInput = document.getElementById('password');
+    const passIcon = document.getElementById('loginPassIcon');
+
+    if (btnToggle && passInput) {
+        btnToggle.addEventListener('click', function() {
+            if (passInput.type === 'password') {
+                passInput.type = 'text';
+                passIcon.className = 'bi bi-eye';
+            } else {
+                passInput.type = 'password';
+                passIcon.className = 'bi bi-eye-slash';
+            }
+        });
+    }
+});
 </script>
 </body>
 </html>

@@ -55,12 +55,30 @@
                 </div>
                 <span class="quick-action-label">Catat Beban</span>
             </a>
+            <a href="<?= site_url('iuran'); ?>" class="quick-action-item">
+                <div class="quick-action-circle bg-primary text-white">
+                    <i class="bi bi-table"></i>
+                </div>
+                <span class="quick-action-label">Matriks</span>
+            </a>
+            <a href="<?= site_url('laporan'); ?>" class="quick-action-item">
+                <div class="quick-action-circle bg-warning text-white">
+                    <i class="bi bi-file-earmark-bar-graph-fill"></i>
+                </div>
+                <span class="quick-action-label">Laporan</span>
+            </a>
             <?php else: ?>
-            <a href="<?= site_url('iuran/riwayat'); ?>" class="quick-action-item">
+            <a href="<?= site_url('iuran'); ?>" class="quick-action-item">
                 <div class="quick-action-circle bg-success text-white">
-                    <i class="bi bi-receipt"></i>
+                    <i class="bi bi-wallet2"></i>
                 </div>
                 <span class="quick-action-label">Iuran Saya</span>
+            </a>
+            <a href="<?= site_url('iuran/riwayat'); ?>" class="quick-action-item">
+                <div class="quick-action-circle bg-primary text-white">
+                    <i class="bi bi-clock-history"></i>
+                </div>
+                <span class="quick-action-label">Riwayat</span>
             </a>
             <a href="<?= site_url('warga'); ?>" class="quick-action-item">
                 <div class="quick-action-circle bg-info text-white">
@@ -68,21 +86,13 @@
                 </div>
                 <span class="quick-action-label">Warga</span>
             </a>
-            <?php endif; ?>
-
-            <a href="<?= site_url('iuran'); ?>" class="quick-action-item">
-                <div class="quick-action-circle bg-primary text-white">
-                    <i class="bi bi-table"></i>
-                </div>
-                <span class="quick-action-label">Matriks</span>
-            </a>
-
             <a href="<?= site_url('laporan'); ?>" class="quick-action-item">
                 <div class="quick-action-circle bg-warning text-white">
                     <i class="bi bi-file-earmark-bar-graph-fill"></i>
                 </div>
                 <span class="quick-action-label">Laporan</span>
             </a>
+            <?php endif; ?>
         </div>
     </div>
 

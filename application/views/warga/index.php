@@ -8,9 +8,16 @@
             <div class="text-muted small">Total <?= count($warga_list); ?> Hunian</div>
         </div>
         <?php if ($current_user['role_name'] === 'admin' || $current_user['role_name'] === 'pengurus'): ?>
-            <a href="<?= site_url('warga/create'); ?>" class="btn btn-primary btn-sm rounded-pill px-3">
-                <i class="bi bi-plus me-1"></i> Tambah
-            </a>
+            <div class="d-flex align-items-center gap-1">
+                <?php if (!empty($total_tanpa_user) && $total_tanpa_user > 0): ?>
+                    <a href="<?= site_url('warga/generate_all_users'); ?>" class="btn btn-success btn-sm rounded-pill px-2 py-1" style="font-size: 0.75rem;" onclick="return confirm('Buatkan akun login otomatis untuk SEMUA (<?= $total_tanpa_user; ?>) warga yang belum memiliki akun? Password default: WargaBaik1!')" title="Buat User Semua Warga">
+                        <i class="bi bi-people-fill me-1"></i> +User (<?= $total_tanpa_user; ?>)
+                    </a>
+                <?php endif; ?>
+                <a href="<?= site_url('warga/create'); ?>" class="btn btn-primary btn-sm rounded-pill px-3">
+                    <i class="bi bi-plus me-1"></i> Tambah
+                </a>
+            </div>
         <?php endif; ?>
     </div>
 
@@ -32,8 +39,28 @@
                 </span>
             </div>
 
-            <h6 class="fw-bold text-dark mb-1"><?= html_escape($w->nama_lengkap); ?></h6>
-            <?php if ($w->nik): ?>
+            <h6 class="fw-bold text-dark mb-1">
+                <?= html_escape($w->nama_lengkap); ?>
+                <?php if ($w->id_warga == $current_user['id_warga']): ?>
+                    <span class="badge bg-info-subtle text-info border ms-1" style="font-size: 0.65rem;">(Saya)</span>
+                <?php endif; ?>
+            </h6>
+
+            <?php if ($current_user['role_name'] === 'admin' || $current_user['role_name'] === 'pengurus'): ?>
+                <div class="mb-2">
+                    <?php if (!empty($w->username)): ?>
+                        <span class="badge bg-light text-secondary border fw-normal" style="font-size: 0.68rem;" title="User terhubung">
+                            <i class="bi bi-person-check-fill text-success me-1"></i>User: <?= html_escape($w->username); ?>
+                        </span>
+                    <?php else: ?>
+                        <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle fw-normal" style="font-size: 0.68rem;" title="Belum memiliki user login">
+                            <i class="bi bi-person-exclamation me-1"></i>Belum Ada Akun Login
+                        </span>
+                    <?php endif; ?>
+                </div>
+            <?php endif; ?>
+
+            <?php if ($w->nik && ($current_user['role_name'] === 'admin' || $current_user['role_name'] === 'pengurus' || $w->id_warga == $current_user['id_warga'])): ?>
                 <div class="text-muted small mb-2"><i class="bi bi-card-text me-1"></i> NIK: <?= html_escape($w->nik); ?></div>
             <?php endif; ?>
 
@@ -44,6 +71,11 @@
                 
                 <?php if ($current_user['role_name'] === 'admin' || $current_user['role_name'] === 'pengurus'): ?>
                 <div class="btn-group btn-group-sm">
+                    <?php if (empty($w->username)): ?>
+                        <a href="<?= site_url('warga/generate_user/' . $w->id_warga); ?>" class="btn btn-outline-success py-1 px-2" onclick="return confirm('Buatkan akun login otomatis untuk <?= html_escape($w->nama_lengkap); ?> dengan password default WargaBaik1!?')" title="Buatkan Akun Login">
+                            <i class="bi bi-person-plus-fill"></i>
+                        </a>
+                    <?php endif; ?>
                     <a href="<?= site_url('warga/edit/' . $w->id_warga); ?>" class="btn btn-outline-secondary py-1 px-2" title="Edit">
                         <i class="bi bi-pencil-square"></i>
                     </a>
@@ -70,9 +102,16 @@
             <p class="text-secondary small mb-0">Daftar seluruh warga perumahan, nomor blok, serta status kepemilikan.</p>
         </div>
         <?php if ($current_user['role_name'] === 'admin' || $current_user['role_name'] === 'pengurus'): ?>
-            <a href="<?= site_url('warga/create'); ?>" class="btn btn-primary btn-sm">
-                <i class="bi bi-person-plus me-1"></i> Tambah Warga
-            </a>
+            <div class="d-flex align-items-center gap-2">
+                <?php if (!empty($total_tanpa_user) && $total_tanpa_user > 0): ?>
+                    <a href="<?= site_url('warga/generate_all_users'); ?>" class="btn btn-outline-success btn-sm" onclick="return confirm('Buatkan akun login otomatis untuk SEMUA (<?= $total_tanpa_user; ?>) warga yang belum memiliki akun login? Password default: WargaBaik1!')">
+                        <i class="bi bi-people-fill me-1"></i> Buat User Semua Warga (<?= $total_tanpa_user; ?>)
+                    </a>
+                <?php endif; ?>
+                <a href="<?= site_url('warga/create'); ?>" class="btn btn-primary btn-sm">
+                    <i class="bi bi-person-plus me-1"></i> Tambah Warga
+                </a>
+            </div>
         <?php endif; ?>
     </div>
 
@@ -84,7 +123,9 @@
                         <th style="width: 50px;">No</th>
                         <th>Nomor Blok</th>
                         <th>Nama Lengkap</th>
-                        <th>NIK</th>
+                        <?php if ($current_user['role_name'] === 'admin' || $current_user['role_name'] === 'pengurus'): ?>
+                            <th>NIK</th>
+                        <?php endif; ?>
                         <th>No. WhatsApp</th>
                         <th>Status Hunian</th>
                         <th>Status Penghuni</th>
@@ -102,8 +143,30 @@
                                 <?= html_escape($w->no_blok); ?>
                             </span>
                         </td>
-                        <td class="fw-semibold text-dark"><?= html_escape($w->nama_lengkap); ?></td>
-                        <td class="text-muted small"><?= html_escape($w->nik ?? '-'); ?></td>
+                        <td class="fw-semibold text-dark">
+                            <div>
+                                <?= html_escape($w->nama_lengkap); ?>
+                                <?php if ($w->id_warga == $current_user['id_warga']): ?>
+                                    <span class="badge bg-info-subtle text-info border ms-1" style="font-size: 0.65rem;">(Saya)</span>
+                                <?php endif; ?>
+                            </div>
+                            <?php if ($current_user['role_name'] === 'admin' || $current_user['role_name'] === 'pengurus'): ?>
+                                <div class="mt-1">
+                                    <?php if (!empty($w->username)): ?>
+                                        <span class="badge bg-light text-secondary border fw-normal" style="font-size: 0.68rem;" title="Akun Login Terhubung">
+                                            <i class="bi bi-person-check-fill text-success me-1"></i><?= html_escape($w->username); ?>
+                                        </span>
+                                    <?php else: ?>
+                                        <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle fw-normal" style="font-size: 0.68rem;" title="Warga ini belum memiliki user login">
+                                            <i class="bi bi-person-exclamation me-1"></i>Belum Ada Akun Login
+                                        </span>
+                                    <?php endif; ?>
+                                </div>
+                            <?php endif; ?>
+                        </td>
+                        <?php if ($current_user['role_name'] === 'admin' || $current_user['role_name'] === 'pengurus'): ?>
+                            <td class="text-muted small"><?= html_escape($w->nik ?? '-'); ?></td>
+                        <?php endif; ?>
                         <td>
                             <a href="https://wa.me/<?= preg_replace('/[^0-9]/', '', $w->no_hp); ?>" target="_blank" class="text-success text-decoration-none small">
                                 <i class="bi bi-whatsapp me-1"></i><?= html_escape($w->no_hp); ?>
@@ -124,6 +187,11 @@
                         <?php if ($current_user['role_name'] === 'admin' || $current_user['role_name'] === 'pengurus'): ?>
                         <td>
                             <div class="btn-group btn-group-sm">
+                                <?php if (empty($w->username)): ?>
+                                    <a href="<?= site_url('warga/generate_user/' . $w->id_warga); ?>" class="btn btn-outline-success" onclick="return confirm('Buatkan akun login otomatis untuk warga <?= html_escape($w->nama_lengkap); ?> dengan password default WargaBaik1!?')" title="Buatkan Akun Login Warga">
+                                        <i class="bi bi-person-plus-fill"></i>
+                                    </a>
+                                <?php endif; ?>
                                 <a href="<?= site_url('warga/edit/' . $w->id_warga); ?>" class="btn btn-outline-secondary" title="Edit Data">
                                     <i class="bi bi-pencil-square"></i>
                                 </a>

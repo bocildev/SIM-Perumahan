@@ -35,9 +35,14 @@
                     <div class="text-muted" style="font-size: 0.72rem;"><?= ucfirst($w->status_hunian); ?> • <?= ucfirst($w->status_penghuni); ?></div>
                 </div>
                 <?php if ($current_user['role_name'] === 'admin' || $current_user['role_name'] === 'pengurus'): ?>
-                    <a href="<?= site_url('iuran/bayar?warga_id=' . $w->id_warga . '&tahun=' . $tahun); ?>" class="btn btn-sm btn-primary rounded-pill px-3 py-1" style="font-size: 0.75rem;">
-                        <i class="bi bi-plus me-1"></i> Bayar
-                    </a>
+                    <div class="d-flex gap-1">
+                        <a href="<?= site_url('iuran/detail/' . $w->id_warga . '?tahun=' . $tahun); ?>" class="btn btn-sm btn-outline-info rounded-pill px-2 py-1" style="font-size: 0.72rem;">
+                            <i class="bi bi-eye"></i> Detail
+                        </a>
+                        <a href="<?= site_url('iuran/bayar?warga_id=' . $w->id_warga . '&tahun=' . $tahun); ?>" class="btn btn-sm btn-primary rounded-pill px-2 py-1" style="font-size: 0.72rem;">
+                            <i class="bi bi-plus"></i> Bayar
+                        </a>
+                    </div>
                 <?php endif; ?>
             </div>
 
@@ -163,9 +168,14 @@
 
                         <?php if ($current_user['role_name'] === 'admin' || $current_user['role_name'] === 'pengurus'): ?>
                         <td>
-                            <a href="<?= site_url('iuran/bayar?warga_id=' . $w->id_warga . '&tahun=' . $tahun); ?>" class="btn btn-sm btn-outline-primary py-1 px-2" title="Bayar Iuran">
-                                <i class="bi bi-wallet2"></i>
-                            </a>
+                            <div class="btn-group btn-group-sm">
+                                <a href="<?= site_url('iuran/detail/' . $w->id_warga . '?tahun=' . $tahun); ?>" class="btn btn-outline-info" title="Lihat Rincian Tanggal & Pembayaran">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                                <a href="<?= site_url('iuran/bayar?warga_id=' . $w->id_warga . '&tahun=' . $tahun); ?>" class="btn btn-outline-primary" title="Input Pembayaran">
+                                    <i class="bi bi-wallet2"></i>
+                                </a>
+                            </div>
                         </td>
                         <?php endif; ?>
                     </tr>

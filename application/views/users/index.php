@@ -9,9 +9,16 @@
             <h5 class="fw-bold mb-0 text-dark">Manajemen User</h5>
             <div class="text-muted small">Total <?= count($users); ?> Pengguna</div>
         </div>
-        <a href="<?= site_url('users/create'); ?>" class="btn btn-primary btn-sm rounded-pill px-3">
-            <i class="bi bi-plus me-1"></i> User
-        </a>
+        <div class="d-flex align-items-center gap-1">
+            <?php if (!empty($total_tanpa_user) && $total_tanpa_user > 0): ?>
+                <a href="<?= site_url('warga/generate_all_users'); ?>" class="btn btn-outline-success btn-sm rounded-pill px-2 py-1" style="font-size: 0.75rem;" onclick="return confirm('Buatkan akun login otomatis untuk SEMUA (<?= $total_tanpa_user; ?>) warga yang belum memiliki user? Password default: WargaBaik1!')" title="Buat User Semua Warga">
+                    <i class="bi bi-people-fill me-1"></i> +Warga (<?= $total_tanpa_user; ?>)
+                </a>
+            <?php endif; ?>
+            <a href="<?= site_url('users/create'); ?>" class="btn btn-primary btn-sm rounded-pill px-3">
+                <i class="bi bi-plus me-1"></i> User
+            </a>
+        </div>
     </div>
 
     <!-- Mobile User Cards -->
@@ -64,7 +71,8 @@
             </div>
 
             <div class="d-flex justify-content-end gap-2 pt-2 border-top">
-                <a href="<?= site_url('users/reset_password/' . $u->id_user); ?>" class="btn btn-outline-warning btn-sm py-1 px-3 rounded-pill" onclick="return confirm('Reset password akun <?= html_escape($u->username); ?> menjadi password123?')" style="font-size: 0.75rem;">
+                <?php $default_pass_txt = ($u->role_name === 'warga') ? 'WargaBaik1!' : 'password123'; ?>
+                <a href="<?= site_url('users/reset_password/' . $u->id_user); ?>" class="btn btn-outline-warning btn-sm py-1 px-3 rounded-pill" onclick="return confirm('Reset password akun <?= html_escape($u->username); ?> menjadi <?= $default_pass_txt; ?>?')" style="font-size: 0.75rem;">
                     <i class="bi bi-key me-1"></i> Reset Password
                 </a>
                 <?php if ($u->id_user != $current_user['id_user']): ?>
@@ -87,9 +95,16 @@
             <h4 class="fw-bold mb-1 text-dark">Management User & Role</h4>
             <p class="text-secondary small mb-0">Kelola akun akses sistem, hak peran (RBAC), serta reset password pengguna.</p>
         </div>
-        <a href="<?= site_url('users/create'); ?>" class="btn btn-primary btn-sm">
-            <i class="bi bi-person-plus-fill me-1"></i> Tambah User Baru
-        </a>
+        <div class="d-flex align-items-center gap-2">
+            <?php if (!empty($total_tanpa_user) && $total_tanpa_user > 0): ?>
+                <a href="<?= site_url('warga/generate_all_users'); ?>" class="btn btn-outline-success btn-sm" onclick="return confirm('Buatkan akun login otomatis untuk SEMUA (<?= $total_tanpa_user; ?>) warga yang belum memiliki akun login? Password default: WargaBaik1!')">
+                    <i class="bi bi-people-fill me-1"></i> Buat User Semua Warga (<?= $total_tanpa_user; ?>)
+                </a>
+            <?php endif; ?>
+            <a href="<?= site_url('users/create'); ?>" class="btn btn-primary btn-sm">
+                <i class="bi bi-person-plus-fill me-1"></i> Tambah User Baru
+            </a>
+        </div>
     </div>
 
     <div class="card card-custom p-4">
@@ -147,7 +162,8 @@
                         <td class="small text-muted"><?= date('d/m/Y', strtotime($u->created_at)); ?></td>
                         <td>
                             <div class="btn-group btn-group-sm">
-                                <a href="<?= site_url('users/reset_password/' . $u->id_user); ?>" class="btn btn-outline-warning" onclick="return confirm('Reset password akun <?= html_escape($u->username); ?> menjadi password123?')" title="Reset Password ke default">
+                                <?php $default_pass_txt = ($u->role_name === 'warga') ? 'WargaBaik1!' : 'password123'; ?>
+                                <a href="<?= site_url('users/reset_password/' . $u->id_user); ?>" class="btn btn-outline-warning" onclick="return confirm('Reset password akun <?= html_escape($u->username); ?> menjadi <?= $default_pass_txt; ?>?')" title="Reset Password ke default (<?= $default_pass_txt; ?>)">
                                     <i class="bi bi-key"></i> Reset
                                 </a>
                                 <?php if ($u->id_user != $current_user['id_user']): ?>
